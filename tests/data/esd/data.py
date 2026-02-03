@@ -1,27 +1,34 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 # Copyright (c) TorchGeo Contributors. All rights reserved.
 # Licensed under the MIT License.
 
 import os
+
 import numpy as np
 import rasterio
-from rasterio.transform import from_bounds
 from rasterio.crs import CRS
+from rasterio.transform import from_bounds
 
-WIDTH = 3600
-HEIGHT = 3600
+WIDTH = 36
+HEIGHT = 36
 BANDS = 13
 PIXEL_SIZE = 30.0  # meters per pixel
 np.random.seed(0)
 
 # EPSG 32602 / UTM zone 2N using PROJ string (bypass proj.db issues)
-CRS_32602 = CRS.from_string("+proj=utm +zone=2 +north +datum=WGS84 +units=m +no_defs")
+CRS_32602 = CRS.from_string('+proj=utm +zone=2 +north +datum=WGS84 +units=m +no_defs')
 
-def write_mock_geotiff(path: str, origin_x: float, origin_y: float,
-                       width: int = WIDTH, height: int = HEIGHT,
-                       bands: int = BANDS, crs: CRS = CRS_32602):
+
+def write_mock_geotiff(
+    path: str,
+    origin_x: float,
+    origin_y: float,
+    width: int = WIDTH,
+    height: int = HEIGHT,
+    bands: int = BANDS,
+    crs: CRS = CRS_32602,
+) -> None:
     """
     Create a mock GeoTIFF with random UInt16 data.
 
@@ -39,9 +46,12 @@ def write_mock_geotiff(path: str, origin_x: float, origin_y: float,
 
     # Define affine transform (origin top-left, Y decreasing)
     transform = from_bounds(
-        origin_x, origin_y - height * PIXEL_SIZE,  # minx, miny
-        origin_x + width * PIXEL_SIZE, origin_y,   # maxx, maxy
-        width, height
+        origin_x,
+        origin_y - height * PIXEL_SIZE,  # minx, miny
+        origin_x + width * PIXEL_SIZE,
+        origin_y,  # maxx, maxy
+        width,
+        height,
     )
 
     # Raster profile
@@ -58,7 +68,7 @@ def write_mock_geotiff(path: str, origin_x: float, origin_y: float,
         'blockxsize': 512,
         'blockysize': 512,
         'interleave': 'band',
-        'nodata': None
+        'nodata': None,
     }
 
     # Generate random raster data
@@ -70,21 +80,19 @@ def write_mock_geotiff(path: str, origin_x: float, origin_y: float,
     with rasterio.open(path, 'w', **profile) as dst:
         dst.write(data)
 
-    print(f"Written: {path}")
+    print(f'Written: {path}')
 
 
 # 2024 image (02VMN)
 write_mock_geotiff(
-    path=os.path.join("tests", "data", "esd", "SDC30_EBD_V001", "2024",
-                      "SDC30_EBD_V001_02VMN_2024_mock.tif"),
+    path=os.path.join(
+        'tests',
+        'data',
+        'esd',
+        'SDC30_EBD_V001',
+        '2024',
+        'SDC30_EBD_V001_02VMN_2024_mock.tif',
+    ),
     origin_x=399945.0,
-    origin_y=6800055.0
-)
-
-# 2005 image (02WMV)
-write_mock_geotiff(
-    path=os.path.join("tests", "data", "esd", "SDC30_EBD_V001", "2005",
-                      "SDC30_EBD_V001_02WMV_2005_mock.tif"),
-    origin_x=399945.0,
-    origin_y=7500015.0
+    origin_y=6800055.0,
 )
