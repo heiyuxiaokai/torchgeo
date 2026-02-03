@@ -13,6 +13,7 @@ Dataset,Type,Source,License,Size (px),Resolution (m)
 `EDDMapS`_,Points,Citizen Scientists,-,-,-
 `EnMAP`_,Imagery,EnMAP,`EnMAP Data License <https://www.enmap.org/data/resources/EnMAP_Data_License.pdf>`_,"1,200x1,200",30
 `EnviroAtlas`_,"Imagery, Masks","NAIP, NLCD, OpenStreetMap","CC-BY-4.0",-,1
+`Embedded Seamless Data`_,Embedding,"Landsat 5/7/8/9, MODIS(Terra)",-,"3,600x3,600",30
 `Esri2020`_,Masks,Sentinel-2,"CC-BY-4.0",-,10
 `EU-DEM`_,DEM,"Aster, SRTM, Russian Topomaps","CSCDA-ESA",-,25
 `EuroCrops`_,Geometries,EU Countries,"CC-BY-SA-4.0",-,-

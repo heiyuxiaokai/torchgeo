@@ -96,6 +96,11 @@ EnviroAtlas
 
 .. autoclass:: EnviroAtlas
 
+Embedded Seamless Data
+^^^^^^^^
+
+.. autoclass:: EmbeddedSeamlessData
+
 Esri2020
 ^^^^^^^^
 
