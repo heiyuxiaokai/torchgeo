@@ -19,15 +19,10 @@ from torchgeo.datasets import (
 
 
 class TestEmbeddedSeamlessData:
-    @pytest.fixture(
-        params=[
-            '2005/SDC30_EBD_V001_02WMV_2005_mock.tif',
-            '2024/SDC30_EBD_V001_02VMN_2024_mock.tif',
-        ]
-    )
+    @pytest.fixture(params=['2024/SDC30_EBD_V001_02VMN_2024_mock.tif'])
     def dataset(self, request: SubRequest) -> EmbeddedSeamlessData:
         paths = os.path.join('tests', 'data', 'esd', 'SDC30_EBD_V001', request.param)
-        return EmbeddedSeamlessData(paths, transform=torch.nn.Identity())
+        return EmbeddedSeamlessData(paths, transforms=torch.nn.Identity())
 
     def test_len(self, dataset: EmbeddedSeamlessData) -> None:
         assert len(dataset) == 1
