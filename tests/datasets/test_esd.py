@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pytest
 import torch
-from _pytest.fixtures import SubRequest
 
 from torchgeo.datasets import (
     DatasetNotFoundError,
@@ -20,9 +19,14 @@ from torchgeo.datasets import (
 
 class TestEmbeddedSeamlessData:
     @pytest.fixture(params=['2024/SDC30_EBD_V001_02VMN_2024_mock.tif'])
-    def dataset(self, request: SubRequest) -> EmbeddedSeamlessData:
-        paths = os.path.join('tests', 'data', 'esd', 'SDC30_EBD_V001', request.param)
+    def dataset(self) -> EmbeddedSeamlessData:
+        paths = os.path.join('tests', 'data', 'esd')
         return EmbeddedSeamlessData(paths, transforms=torch.nn.Identity())
+
+    def test_getitem(self, dataset: EmbeddedSeamlessData) -> None:
+        x = dataset[dataset.bounds]
+        assert isinstance(x, dict)
+        assert isinstance(x['image'], torch.Tensor)
 
     def test_len(self, dataset: EmbeddedSeamlessData) -> None:
         assert len(dataset) == 1

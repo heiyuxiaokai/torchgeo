@@ -5,6 +5,7 @@
 
 import os
 import re
+from collections.abc import Sequence
 from datetime import datetime
 
 import torch
@@ -18,7 +19,7 @@ from .utils import GeoSlice, Path, Sample, disambiguate_timestamp
 
 
 class ESDQuantizer:
-    r"""Decode ESD-encoded quantized indices into continuous embedding vectors.
+    """Decode ESD-encoded quantized indices into continuous embedding vectors.
 
     The ESDQuantizerDecoder converts integer quantization indices produced by an
     ESD quantizer into continuous values in the range [-1, 1], representing
@@ -51,8 +52,13 @@ class ESDQuantizer:
 
     """
 
-    def __init__(self, levels: tuple[int, ...] = (8, 8, 8, 5, 5, 5)) -> None:
-        """Initialize the quantization levels for the embedding."""
+    def __init__(self, levels: Sequence[int] = (8, 8, 8, 5, 5, 5)) -> None:
+        """Initialize the quantization levels for the embedding.
+
+        Args:
+            levels: Sequence of integers specifying the number of quantization
+                levels for each embedding dimension.
+        """
         levels_tensor = torch.tensor(levels, dtype=torch.int32)
         self._levels = levels_tensor
 
@@ -62,7 +68,16 @@ class ESDQuantizer:
         self._basis = basis_tensor
 
     def indices_to_codes(self, indices: Tensor) -> Tensor:
-        """Convert embedding indices to quantized codes."""
+        """Convert embedding indices to normalized continuous codes.
+
+        Args:
+            indices: A tensor of integer indices representing quantized embeddings.
+                Shape can be arbitrary (...,).
+
+        Returns:
+            Tensor of the same shape as `indices` with an additional channel
+            dimension for embedding levels. Values are normalized to [-1, 1].
+        """
         indices = rearrange(indices, '... -> ... 1')
         level_indices = (indices // self._basis) % self._levels
 
@@ -72,14 +87,24 @@ class ESDQuantizer:
         return codes
 
     def quantize(self, input: Tensor) -> Tensor:
-        """Quantize the input tensor using predefined levels."""
+        """Quantize the input tensor using predefined levels.
+
+        Args:
+            input: A tensor containing integer embedding indices. Shape can be
+                arbitrary (...,).
+
+        Returns:
+            Tensor of quantized codes with normalized values in [-1, 1], where
+            the last dimension represents embedding levels. Channels are moved
+            to -3 position for compatibility with expected output layout.
+        """
         return self.indices_to_codes(input).movedim(-1, -3)
 
 
 class EmbeddedSeamlessData(RasterDataset):
-    r"""Embedded Seamless Data (ESD).
+    """Embedded Seamless Data (ESD).
 
-    The `Embedded Seamless Data (ESD) <https://arxiv.org/abs/2601.11183>`
+    The `Embedded Seamless Data (ESD) <https://arxiv.org/abs/2601.11183>`__
     is a global, analysis-ready Earth embedding dataset at 30-meter resolution,
     designed to overcome the computational and storage challenges of planetary-scale
     Earth system science. By transforming multi-sensor satellite observations into
@@ -90,7 +115,7 @@ class EmbeddedSeamlessData(RasterDataset):
     Key features:
 
     * **Longitudinal Consistency**: Provides a continuous record from 2000 to 2024,
-      harmonized from Landsat 5, 7, 8, 9 and MODIS Terra imagery.
+      harmonized from Landsat 5, 7, 8, 9, MODIS Terra and NASADEM imagery.
     * **High Reconstructive Fidelity**: Achieves a Mean Absolute Error (MAE) of 0.013
       across six spectral bands, ensuring the embeddings retain physically meaningful
       surface information.
@@ -125,7 +150,17 @@ class EmbeddedSeamlessData(RasterDataset):
     quantizer = ESDQuantizer()
 
     def __getitem__(self, index: GeoSlice) -> Sample:
-        """..."""
+        """Retrieve input, target, and/or metadata indexed by spatiotemporal slice.
+
+        Args:
+            index: [xmin:xmax:xres, ymin:ymax:yres, tmin:tmax:tres] coordinates to index.
+
+        Returns:
+            Sample of input, target, and/or metadata at that index.
+
+        Raises:
+            IndexError: If *index* is not found in the dataset.
+        """
         sample = super().__getitem__(index)
         sample['image'] = self.quantizer.quantize(sample['image'])
         return sample
@@ -158,6 +193,9 @@ class EmbeddedSeamlessData(RasterDataset):
             sample: Sample dict containing 'image' tensor and metadata.
             show_titles: Whether to show titles on subplots.
             suptitle: Optional figure suptitle.
+
+        Returns:
+            a matplotlib Figure with the rendered sample
         """
         vectors = sample['image']
         _months, _channels, H, W = vectors.shape

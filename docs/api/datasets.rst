@@ -81,6 +81,11 @@ Cropland Data Layer
 
 .. autoclass:: CDL
 
+Embedded Seamless Data
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: EmbeddedSeamlessData
+
 EDDMapS
 ^^^^^^^
 
@@ -95,11 +100,6 @@ EnviroAtlas
 ^^^^^^^^^^^
 
 .. autoclass:: EnviroAtlas
-
-Embedded Seamless Data
-^^^^^^^^
-
-.. autoclass:: EmbeddedSeamlessData
 
 Esri2020
 ^^^^^^^^
