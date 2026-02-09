@@ -34,7 +34,7 @@ from .loveda import LoveDADataModule
 from .mmflood import MMFloodDataModule
 from .naip import NAIPChesapeakeDataModule
 from .nasa_marine_debris import NASAMarineDebrisDataModule
-from .oscd import OSCDDataModule
+from .oscd import OSCD100DataModule, OSCDDataModule
 from .pastis import PASTIS100DataModule, PASTISDataModule
 from .patternnet import PatternNetDataModule
 from .potsdam import Potsdam2DDataModule
@@ -102,6 +102,7 @@ __all__ = (
     'NAIPChesapeakeDataModule',
     'NASAMarineDebrisDataModule',
     'NonGeoDataModule',
+    'OSCD100DataModule',
     'OSCDDataModule',
     'PASTIS100DataModule',
     'PASTISDataModule',

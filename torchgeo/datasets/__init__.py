@@ -129,7 +129,7 @@ from .nccm import NCCM
 from .nlcd import NLCD
 from .openbuildings import OpenBuildings
 from .openstreetmap import OpenStreetMap
-from .oscd import OSCD
+from .oscd import OSCD, OSCD100
 from .pastis import PASTIS, PASTIS100
 from .patternnet import PatternNet
 from .potsdam import Potsdam2D
@@ -209,6 +209,7 @@ __all__ = (
     'NCCM',
     'NLCD',
     'OSCD',
+    'OSCD100',
     'PASTIS',
     'PASTIS100',
     'PRISMA',
