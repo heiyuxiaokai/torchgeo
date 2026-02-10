@@ -176,13 +176,12 @@ class EmbeddedSeamlessData(RasterDataset):
         """
         # Example filename:
         # SDC30_EBD_V001_02VMN_2024.tif
-        filename = os.path.basename(filepath)
-        match = re.search(r'_(?P<date>\d{4})\.', filename)
-        if match:
-            year = match.group('date')
-            return disambiguate_timestamp(year, '%Y')
+        self.filename_glob = "SDC30_EBD_*"
+        self.filename_regex = r".*_(?P<date>\d{4})\."
+        self.date_format = '%Y'
+        mint, maxt = super()._filepath_to_timestamp(filepath)
 
-        return self.mint, self.maxt
+        return mint, maxt
 
     def plot(
         self, sample: Sample, show_titles: bool = True, suptitle: str | None = None
