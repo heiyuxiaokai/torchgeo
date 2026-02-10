@@ -3,8 +3,6 @@
 
 """Embedded Seamless Data."""
 
-import os
-import re
 from collections.abc import Sequence
 from datetime import datetime
 
@@ -15,7 +13,7 @@ from matplotlib.figure import Figure
 from torch import Tensor
 
 from .geo import RasterDataset
-from .utils import GeoSlice, Path, Sample, disambiguate_timestamp
+from .utils import GeoSlice, Path, Sample
 
 
 class ESDQuantizer:
@@ -176,8 +174,8 @@ class EmbeddedSeamlessData(RasterDataset):
         """
         # Example filename:
         # SDC30_EBD_V001_02VMN_2024.tif
-        self.filename_glob = "SDC30_EBD_*"
-        self.filename_regex = r".*_(?P<date>\d{4})\."
+        self.filename_glob = 'SDC30_EBD_*'
+        self.filename_regex = r'.*_(?P<date>\d{4})\.'
         self.date_format = '%Y'
         mint, maxt = super()._filepath_to_timestamp(filepath)
 
