@@ -4,7 +4,6 @@
 """Embedded Seamless Data."""
 
 from collections.abc import Sequence
-from datetime import datetime
 
 import torch
 from einops import rearrange
@@ -13,7 +12,7 @@ from matplotlib.figure import Figure
 from torch import Tensor
 
 from .geo import RasterDataset
-from .utils import GeoSlice, Path, Sample
+from .utils import GeoSlice, Sample
 
 
 class ESDQuantizer:
@@ -145,6 +144,11 @@ class EmbeddedSeamlessData(RasterDataset):
     .. versionadded:: 0.9
     """
 
+    # SDC30_EBD_V001_02VMN_2024.tif
+    filename_glob = 'SDC30_EBD_*'
+    filename_regex = r'.*_(?P<date>\d{4})'
+    date_format = '%Y'
+
     quantizer = ESDQuantizer()
 
     def __getitem__(self, index: GeoSlice) -> Sample:
@@ -162,24 +166,6 @@ class EmbeddedSeamlessData(RasterDataset):
         sample = super().__getitem__(index)
         sample['image'] = self.quantizer.quantize(sample['image'])
         return sample
-
-    def _filepath_to_timestamp(self, filepath: Path) -> tuple[datetime, datetime]:
-        """Extract minimum and maximum timestamps from the filename.
-
-        Args:
-            filepath: Full path to the file.
-
-        Returns:
-            (mint, maxt) tuple.
-        """
-        # Example filename:
-        # SDC30_EBD_V001_02VMN_2024.tif
-        self.filename_glob = 'SDC30_EBD_*'
-        self.filename_regex = r'.*_(?P<date>\d{4})\.'
-        self.date_format = '%Y'
-        mint, maxt = super()._filepath_to_timestamp(filepath)
-
-        return mint, maxt
 
     def plot(
         self, sample: Sample, show_titles: bool = True, suptitle: str | None = None

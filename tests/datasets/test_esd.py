@@ -18,7 +18,7 @@ from torchgeo.datasets import (
 
 
 class TestEmbeddedSeamlessData:
-    @pytest.fixture(params=['2024/SDC30_EBD_V001_02VMN_2024_mock.tif'])
+    @pytest.fixture
     def dataset(self) -> EmbeddedSeamlessData:
         paths = os.path.join('tests', 'data', 'esd')
         return EmbeddedSeamlessData(paths, transforms=torch.nn.Identity())
